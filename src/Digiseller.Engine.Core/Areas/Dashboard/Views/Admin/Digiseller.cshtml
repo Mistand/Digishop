@@ -1,0 +1,41 @@
+﻿@using Digiseller.Engine.Core.Areas.Dashboard.Models.Settings
+@using Digiseller.Engine.Core.Providers
+@model DigisellerSettings
+@{
+    ViewData["Title"] = "Настройка соединения с Digiseller";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Digishop <small>@ViewData["Title"]</small></h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <form asp-controller="Admin" asp-action="Digiseller" asp-area="Dashboard" method="post">
+                            <div class="col-sm-6 b-r">
+                                <div class="form-group">
+                                    <label asp-for="DigisellerId">@Html.DisplayNameFor(m => m.DigisellerId)</label>
+                                    <input type="text" asp-for="DigisellerId" placeholder="@Html.DisplayNameFor(m => m.DigisellerId)..." class="form-control" value="@Model.DigisellerId">
+                                    <span asp-validation-for="DigisellerId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label asp-for="DigisellerUid">@Html.DisplayNameFor(m => m.DigisellerUid)</label>
+                                    <input type="text" asp-for="DigisellerUid" placeholder="@Html.DisplayNameFor(m => m.DigisellerUid)..." class="form-control" value="@Model.DigisellerUid">
+                                    <span asp-validation-for="DigisellerUid" class="text-danger"></span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-primary pull-right m-t-n-xs" type="submit"><strong>Сохранить</strong></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

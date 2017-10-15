@@ -1,0 +1,25 @@
+@*@model Digiseller.Engine.Core.ViewModels.Product.PagingViewModel
+
+@{
+
+}
+
+
+<div class="text-center">
+
+    <div class="btn-group">
+        <button class="btn btn-white" type="button"><i class="fa fa-chevron-left"></i></button>
+        @foreach (var i in normalizeRange)
+        {
+            if (i == Model.CurrentPage)
+            {
+                <button class="btn btn-white active">@i</button>
+
+
+            <button class="btn btn-white">@i</button>
+        }
+        
+
+        <button class="btn btn-white" type="button"><i class="fa fa-chevron-right"></i> </button>
+    </div>
+</div>*@

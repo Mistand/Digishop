@@ -1,0 +1,83 @@
+@using Digiseller.Client.Core.Interfaces.Cart
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model Digiseller.Client.Core.Interfaces.Cart.ICartUpdate
+@{
+    ViewData["Title"] = "Корзина";
+}
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>Корзина</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a asp-controller="Product" asp-action="Index">Главная</a>
+            </li>
+            <li class="active">
+                <strong>Корзина</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-lg-2"> </div>
+</div>
+
+<div id="cartView" class="wrapper wrapper-content animated fadeInRight">
+    @Html.Partial("_Cart", Model)
+</div>
+
+@section Scripts {
+    <environment names="Development">
+        <script src="~/lib_bower/slick-carousel/slick/slick.js"></script>
+        <script src="~/lib_bower/toastr/toastr.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/lib_bower/slick-carousel/slick/slick.min.js"></script>
+        <script src="~/lib_bower/toastr/toastr.min.js"></script>
+    </environment>
+    <script type="text/javascript">
+        var urlUpdate = "/Cart/UpdateCart";
+        var urlGetView = "/Cart/GetCart";
+        var urlClearCart = "/Cart/Clear";
+
+        $(document.body).on("click",
+            "#btnSubmit",
+            function () {
+                $.get(urlClearCart, function() { $("form[id='digiselller_form']").submit(); });
+            });
+
+
+        $(document.body).on("click",
+            "a[data-position]",
+            function () {
+                $("div[id='cartProduct']").addClass("sk-loading");
+                UpdateItem($(this), 0);
+            });
+
+        $(document.body).on("keyup",
+            "input[type='text']",
+            function () {
+                var currentItem = $(this);
+                if(window.a) clearTimeout(window.a);
+                window.a = setTimeout(function(){
+                    $("div[id='cartProduct']").addClass("sk-loading");
+
+                    UpdateItem(currentItem, currentItem.val());
+                }, 1000);
+                
+            });
+
+        function UpdateItem(item, count) {
+            var productId = $(item).attr("data-position");
+
+            $.ajax({
+                url: urlUpdate + "/" + productId + "/" + count
+            });
+
+            $.get(urlGetView)
+                .done(function (response) {
+                    $("#cartView").html('');
+                    $("#cartView").html(response);
+                    $("div[id='cartProduct']").removeClass("sk-loading");
+                });
+        }
+    </script>
+}

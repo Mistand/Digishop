@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Dashboard v.4";
+
+    var success = TempData.ContainsKey("success") ? TempData["success"].ToString() : string.Empty;
+    var fail = TempData.ContainsKey("fail") ? TempData["fail"].ToString() : string.Empty;
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="container">
+        @if (!string.IsNullOrEmpty(success))
+        {
+            <div class="alert alert-success">
+                @success
+            </div>
+        }
+        
+        @if (!string.IsNullOrEmpty(fail))
+        {
+            <div class="alert alert-danger">
+                @fail
+            </div>
+        }
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-sm-6 media-list">
+                                <a class="media-link" asp-action="System" asp-controller="Admin" asp-area="Dashboard">
+                                    <div class="media-left"><img src="~/Images/icons/tools.png" class="img-md">
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="media-heading">Настройка системы</h4>
+                                        <span class="text-muted text-size-small">Настройка общих параметров скрипта, таких как наименование, ключевые слова, количества выводимых товаров</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-sm-6 media-list" asp-action="Digiseller" asp-controller="Admin" asp-area="Dashboard">
+                                <a class="media-link" asp-action="Digiseller" asp-controller="Admin" asp-area="Dashboard">
+                                    <div class="media-left"><img src="~/Images/icons/digiseller.png" class="img-md">
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="media-heading">Настройка подключения</h4>
+                                        <span class="text-muted text-size-small">Настройка общих параметров подключения к системе Digiseller</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row">
+                            <div class="col-sm-6 media-list">
+                                <a class="media-link" asp-action="Admin" asp-controller="Admin" asp-area="Dashboard">
+                                    <div class="media-left"><img src="~/Images/icons/user.png" class="img-md">
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="media-heading">Настройка доступа администратора</h4>
+                                        <span class="text-muted text-size-small">Настройка доступа администратора (логин и пароль)</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

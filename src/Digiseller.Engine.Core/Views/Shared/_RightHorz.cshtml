@@ -1,0 +1,54 @@
+﻿@using System
+@using System.Linq
+@using Digiseller.Client.Core.Enums
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var currencyList = Enum.GetValues(typeof(Currency)).Cast<Currency>().ToList();
+    currencyList.RemoveAt(currencyList.Count - 1); // Remove mBTC
+
+}
+
+@functions
+{
+
+    private static string GetCurrencyIconWithName(Currency currency)
+    {
+        switch (currency)
+        {
+            case Currency.USD:
+                return $"$ USD";
+            case Currency.RUR:
+                return $"₽ RUB";
+            case Currency.EUR:
+                return $"€ EUR";
+            case Currency.UAH:
+                return $"₴ UAH";
+            default:
+                throw new ArgumentOutOfRangeException(nameof(currency), currency, null);
+        }
+    }
+}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li class="dropdown">
+        <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#" aria-expanded="true">
+            @GetCurrencyIconWithName(Context.Session.GetCurrency())
+        </a>
+        <ul class="dropdown-menu dropdown-alerts">
+            @foreach (var i in currencyList)
+            {
+                <li>
+                    <a id="currencySwitcher" data-currency="@i.ToString()">
+                        <div>
+                            @GetCurrencyIconWithName(i)
+                        </div>
+                    </a>
+                </li>
+            }
+        </ul>
+    </li>
+    <li class="dropdown"><a asp-controller="Cart" asp-action="ViewCart" class="dropdown-toggle count-info">
+            Корзина <i class="fa fa-shopping-cart"></i>
+        <span class="label label-warning">@await Component.InvokeAsync("CartCountItems")</span></a>
+    </li>
+</ul>

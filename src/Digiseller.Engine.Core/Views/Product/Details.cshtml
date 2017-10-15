@@ -1,0 +1,246 @@
+﻿@using System
+@using System.Collections.Generic
+@using System.Linq
+@using System.Net
+@using Digiseller.Client.Core.Enums
+@using Digiseller.Client.Core.Interfaces.ProductInformation
+@using Microsoft.AspNetCore.Http.Extensions
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model Digiseller.Engine.Core.ViewModels.Product.ProductDetailViewModel
+@{
+    ViewData["Title"] = Model.Product.Name;
+    var product = Model.Product;
+
+    var breadCrumb = new List<ICategory>();
+    if (product.Category != null)
+    {
+        breadCrumb.AddRange(FromLinkedToNormal(product.Category));
+    }
+}
+
+@functions {
+
+    private static string Price(Currency currency, IPriceList prices)
+    {
+        switch (currency)
+        {
+            case Currency.USD:
+                return $"${prices.Wmz}";
+            case Currency.RUR:
+                return $"{prices.Wmr}₽";
+            case Currency.EUR:
+                return $"€{prices.Wme}";
+            case Currency.UAH:
+                return $"{prices.Wmu}₴";
+            default:
+                throw new ArgumentOutOfRangeException(nameof(currency), currency, null);
+        }
+    }
+
+    private static IEnumerable<ICategory> FromLinkedToNormal(ICategory category)
+    {
+        var categories = new List<ICategory> { category };
+        if (category.ChildCategory != null)
+        {
+            categories.AddRange(FromLinkedToNormal(category.ChildCategory));
+        }
+
+        return categories;
+    }
+}
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>@product.Name</h2>
+        @if (product.Category != null)
+        {
+            <ol class="breadcrumb">
+                <li>
+                    <a asp-controller="Product" asp-action="Index">Каталог</a>
+                </li>
+                @foreach (var i in breadCrumb)
+                {
+                    <li class="@(i == breadCrumb.Last() ? "active" : string.Empty)">
+                        <a asp-controller="Product" asp-action="Index" asp-route-category="@i.Id">@i.Name</a>
+                    </li>
+                }
+                <li class="active">
+                    @product.Name
+                </li>
+            </ol>
+        }
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox product-detail">
+                <div id="itemView" class="ibox-content">
+                    
+                    <div class="sk-spinner sk-spinner-three-bounce">
+                        <div class="sk-bounce1"></div>
+                        <div class="sk-bounce2"></div>
+                        <div class="sk-bounce3"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="product-images">
+                                @if (product.Images.Count() != 0 || product.Videos.Count(a => a.Type != VideoType.Unknown) != 0)
+                                {
+                                    foreach (var i in product.Images)
+                                    {
+                                        <div>
+                                            <a target="_blank" href="@i.Real.Url"><img class="img-responsive" src="@i.Real.Url" alt=""/></a>
+                                        </div>
+                                    }
+
+                                    foreach (var i in product.Videos)
+                                    {
+                                        string videoUrl;
+
+                                        switch (i.Type)
+                                        {
+                                            case VideoType.Youtube:
+                                                videoUrl = $"https://www.youtube.com/embed/{i.Id}";
+                                                break;
+                                            case VideoType.Vimeo:
+                                                videoUrl = $"https://player.vimeo.com/video/{i.Id}";
+                                                break;
+                                            default:
+                                                continue;
+                                        }
+
+                                        <div>
+                                            <div class="embed-responsive embed-responsive-16by9">
+                                                <iframe class="embed-responsive-item" src="@videoUrl" allowfullscreen></iframe>
+                                            </div>
+                                        </div>
+
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="image-imitation">
+                                        [ИЗОБРАЖЕНИЕ ОТСУТСТВУЕТ]
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="font-bold m-b-xs">
+                                @Html.Raw(WebUtility.HtmlDecode(product.Name))
+                            </h2>
+                            <hr>
+                            <div>
+                                @if(product.InStock != null && (bool)product.InStock)
+                                {
+                                    <button id="addToCart" class="btn btn-primary pull-right" style="margin-left: 5px;">Добавить в корзину</button>
+                                    <form id="digiselller_form" action="https://www.oplata.info/asp2/pay.asp" method="post">
+                                        <input type="hidden" name="id_d" value="@product.Id"/>
+                                        <input type="hidden" name="cart_uid" value=""/>
+                                        <input type="hidden" name="typecurr" value=""/>
+                                        <input type="hidden" name="email" value=""/>
+                                        <input type="hidden" name="lang" value="ru-RU"/>
+                                        <input type="hidden" name="failpage" value="@Context.Request.GetDisplayUrl()"/>
+                                        <input type="hidden" name="agent" value="@await Component.InvokeAsync("SellerId")"/>
+                                        <input type="hidden" name="promocode" value=""/>
+                                        <input type="hidden" name="unit_cnt" value=""/>
+                                        <button type="submit" class="btn btn-danger pull-right">Купить в 1 клик</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <h4 class="pull-right">Нет в наличии</h4>
+                                }
+                                <h1 class="product-main-price">@Price(Context.Session.GetCurrency(), product.Prices)</h1>
+                            </div>
+                            <hr>
+                            <h4>Описание</h4>
+                            <div class="small text-muted" style="white-space: pre-line">
+                                @Html.Raw(WebUtility.HtmlDecode(product.Information))
+                            </div><br/>
+                            <h4>Дополнительно</h4>
+                            <div class="small text-muted" style="white-space: pre-line">
+                                @Html.Raw(WebUtility.HtmlDecode(product.AdditionalInformation))
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox-footer">
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1">Положительные отзывы</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-2">Отрицательные отзывы</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-3">Подряд</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="tab-1" class="tab-pane active">
+                                <div class="panel-body">
+                                    @Html.Partial("_ProductReviews", Model.GoodReviews)
+                                </div>
+                            </div>
+                            <div id="tab-2" class="tab-pane">
+                                <div class="panel-body">
+                                    @Html.Partial("_ProductReviews", Model.BadReviews)
+                                </div>
+                            </div>
+                            <div id="tab-3" class="tab-pane">
+                                <div class="panel-body">
+                                    @Html.Partial("_ProductReviews", Model.AllReviews)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+@section Styles {
+    <environment names="Development,Staging,Production">
+        <link rel="stylesheet" href="~/lib_bower/slick-carousel/slick/slick.css" />
+        <link rel="stylesheet" href="~/lib_bower/slick-carousel/slick/slick-theme.css" />
+        <link rel="stylesheet" href="~/lib_bower/toastr/toastr.min.css" />
+    </environment>
+}
+@section Scripts {
+    <environment names="Development">
+        <script src="~/lib_bower/slick-carousel/slick/slick.js"></script>
+        <script src="~/lib_bower/toastr/toastr.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/lib_bower/slick-carousel/slick/slick.min.js"></script>
+        <script src="~/lib_bower/toastr/toastr.min.js"></script>
+    </environment>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.product-images').slick({
+                dots: true
+            });
+
+            $("#addToCart").click(function () {
+                $("#itemView").toggleClass("sk-loading");
+                $.ajax({
+                        url: "@Html.Raw(Url.Action("AddToCart", "Cart", new { productId = product.Id }, null))",
+                        beforeSend: function() { $("itemView").toggleClass("sk-loading"); }
+                    })
+                    .done(function() {
+                        toastr.success('Товар успешно добавлен в корзину', 'Успешно');
+                    })
+                    .fail(function() {
+                        toastr.error('Товар упал мимо корзины :( Повторите попытку или попробуйте позже', 'Ошибка');
+                    })
+                    .always(function() {
+                        $("#itemView").toggleClass("sk-loading");
+                    });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,77 @@
+﻿@using Digiseller.Engine.Core.Areas.Dashboard.Models.Settings
+@using Digiseller.Engine.Core.Providers
+@model Digiseller.Engine.Core.Areas.Dashboard.Models.Install
+@inject IConfProvider Conf
+@{
+    ViewData["Title"] = "Установка";
+}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            @if (Conf.Get<MainSettings>().Installed)
+            {
+                <div class="middle-box text-center animated fadeInRightBig">
+                    <h3 class="font-bold">Ошибка</h3>
+                    <div class="error-desc">
+                        Интернет-магазин <b>Digishop</b> уже установлен. Если Вы хотите произвести установку вновь, измените в конфигурационном файле значение <b>MainSettings:Installed</b>
+                        <br><a asp-controller="Home" asp-action="Index" asp-area="Dashboard" class="btn btn-primary m-t">Главная</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Digishop <small>установка интернет-магазина</small></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <form asp-controller="Home" asp-action="Install" asp-area="Dashboard" method="post">
+                                <div class="col-sm-6 b-r">
+                                    <h3 class="m-t-none m-b">Настройки администратора</h3>
+                                    <p>Введите логин и пароль администратора интернет-магазина</p>
+                                    <div class="form-group">
+                                        <label>@Html.DisplayNameFor(m => m.AdminLogin)</label>
+                                        <input type="text" asp-for="AdminLogin" placeholder="Логин администратора..." class="form-control">
+                                        <span asp-validation-for="AdminLogin" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Html.DisplayNameFor(m => m.Password)</label>
+                                        <input type="password" asp-for="Password" placeholder="Пароль администратора..." class="form-control">
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Html.DisplayNameFor(m => m.PasswordCompare)</label>
+                                        <input type="password" asp-for="PasswordCompare" placeholder="Повторите пароль..." class="form-control">
+                                        <span asp-validation-for="PasswordCompare" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h3 class="m-t-none m-b">Digiselller</h3>
+                                    <p>Заполните поля в соответствии с данными из Digiseller</p>
+                                    <div class="form-group">
+                                        <label>@Html.DisplayNameFor(m => m.DigisellerId)</label>
+                                        <input type="text" asp-for="DigisellerId" placeholder="Идентификатор продавца" class="form-control">
+                                        <span asp-validation-for="DigisellerId" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Html.DisplayNameFor(m => m.DigisellerUid)</label>
+                                        <input type="text" asp-for="DigisellerUid" placeholder="Идентификатор продавца №2" class="form-control">
+                                        <span asp-validation-for="DigisellerUid" class="text-danger"></span>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-primary pull-right m-t-n-xs" type="submit"><strong>Сохранить</strong></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+

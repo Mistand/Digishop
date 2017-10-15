@@ -1,0 +1,134 @@
+@using System.Linq
+@using Digiseller.Client.Core.Interfaces.Cart
+@using Microsoft.AspNetCore.Http.Extensions
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model Digiseller.Client.Core.Interfaces.Cart.ICartUpdate
+    
+@{
+    var emptyCart = false;
+    emptyCart = Model == null;
+    if (!emptyCart)
+    {
+        emptyCart = !Model.Products.Any(p => p.CountItem > 0);
+    }
+
+}    
+
+<div class="row">
+    @if (emptyCart)
+    {
+        <div class="col-lg-12">
+            <div class="text-center m-t-lg">
+                <h1>
+                    Ваша корзина пуста
+                </h1>
+                <small>Для начала добавьте товары в корзину</small>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-md-9">
+
+            <div class="ibox">
+                <div class="ibox-title">
+                    <span class="pull-right">(<strong>@Model.Products.Count()</strong>) товаров</span>
+                    <h5>Товары в Вашей корзине</h5>
+                </div>
+                @foreach (var i in Model.Products.Where(p => p.CountItem > 0))
+                {
+                    <div id="cartProduct" class="ibox-content">
+                        <div class="sk-spinner sk-spinner-three-bounce">
+                            <div class="sk-bounce1"></div>
+                            <div class="sk-bounce2"></div>
+                            <div class="sk-bounce3"></div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table shoping-cart-table">
+                                <tbody>
+                                <tr>
+                                    <td width="90">
+                                        <img alt="" src="@Html.DigisellerImage(i.Id, 90, 90)"/>
+                                    </td>
+                                    <td class="desc">
+                                        <h3>
+                                            <a asp-controller="Product" asp-action="Details" asp-route-id="@i.Id" class="text-navy">
+                                                @i.Name
+                                            </a>
+                                        </h3>
+                                        <p class="small">
+
+                                        </p>
+
+                                        <div class="m-t-sm">
+                                            <a data-position="@i.ItemId" class="text-muted"><i class="fa fa-trash"></i> Удалить из корзины</a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @Html.Price(Context.Session.GetCurrency(), i.Price)
+                                    </td>
+                                    <td width="65">
+                                        <input id="" type="text" data-id="@i.Id" data-position="@i.ItemId" class="form-control" placeholder="@i.CountItem">
+                                    </td>
+                                    <td>
+                                        <h4>@*Итоговая стоимость*@
+                                            @Html.Price(Context.Session.GetCurrency(), i.Price * i.CountItem)
+                                        </h4>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                }
+                <div class="ibox-content">
+                    <button id="btnSubmit" type="submit" class="btn btn-primary pull-right"><i class="fa fa fa-shopping-cart"></i> Перейти к оплате</button>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-white"><i class="fa fa-arrow-left"></i> Вернуться к каталогу</a>
+                    
+                    <form id="digiselller_form" action="https://www.oplata.info/asp2/pay.asp" method="post">
+                        <input type="hidden" name="id_d" value="" />
+                        <input type="hidden" name="cart_uid" value="@Context.Session.GetCartId()" />
+                        <input type="hidden" name="typecurr" value="" />
+                        <input type="hidden" name="email" value="" />
+                        <input type="hidden" name="lang" value="ru-RU" />
+                        <input type="hidden" name="failpage" value="@Context.Request.GetDisplayUrl()" />
+                        <input type="hidden" name="agent" value="@await Component.InvokeAsync("SellerId")" />
+                        <input type="hidden" name="promocode" value="" />
+                        <input type="hidden" name="unit_cnt" value="" />
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Подытог корзины</h5>
+                </div>
+                <div class="ibox-content">
+                    <span>
+                        Общая стоимость
+                    </span>
+                    <h2 class="font-bold">
+                        @Html.Price(Context.Session.GetCurrency(), (decimal)Model.CartPrice)
+                    </h2>
+
+                    <hr />
+                <span class="text-muted small">
+                    *Стоимость покупки может быть меньше в зависимости от имеющейся скидки или купона от продавца.
+                </span>
+                    <div class="m-t-sm">
+                        <div class="btn-group">
+                            <button id="btnSubmit" class="btn btn-primary btn-sm"><i class="fa fa-shopping-cart"></i> Оплатить</button>
+                            <a asp-controller="Cart" asp-action="Clear" class="btn btn-white btn-sm"> Очистить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

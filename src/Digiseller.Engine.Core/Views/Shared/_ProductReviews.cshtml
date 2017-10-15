@@ -1,0 +1,74 @@
+@using Digiseller.Client.Core.Enums
+@model Digiseller.Client.Core.Interfaces.ProductReviews.IProductReviews
+@{
+    System.Globalization.CultureInfo cultureinfo =
+        new System.Globalization.CultureInfo("ru-RU");
+}
+
+@functions {
+
+    private static string StatusClass(ReviewType? type)
+    {
+        switch (type)
+        {
+            case ReviewType.Good:
+                return "text-info";
+            case ReviewType.Bad:
+                return "text-danger";
+            default:
+                return "";
+        }
+    }
+
+    private static string StatusText(ReviewType? type)
+    {
+        switch (type)
+        {
+            case ReviewType.Good:
+                return "Положительный";
+            case ReviewType.Bad:
+                return "Отрицательный";
+            default:
+                return "???";
+        }
+    }
+
+}    
+
+
+@if (Model.Reviews.Any())
+{
+    if (Model.Pagination.PageCount > 1)
+    {
+        <div class="text-center text-muted">Отображены последние @Model.Reviews.Count() отзывов</div><br />
+    }
+    <div class="project-list">
+        <table class="table table-hover">
+            <tbody>
+            @foreach (var i in Model.Reviews)
+            {
+                <tr>
+                    <td class="project-status">
+                        <span class="text @StatusClass(i.Type)">@StatusText(i.Type)</span>
+                    </td>
+                    <td class="project-name">
+                        @i.Information
+                    </td>
+                    <td class="project-actions">
+                        @i.Date?.ToString("dd MMMM yyyy HH:mm", cultureinfo)
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center m-t-lg">
+        <h5>
+            Отзывов нет
+        </h5>
+    </div>
+}
+

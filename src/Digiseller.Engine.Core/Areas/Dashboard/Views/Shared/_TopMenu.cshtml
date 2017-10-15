@@ -1,0 +1,24 @@
+﻿<div class="row border-bottom white-bg">
+    <nav class="navbar navbar-static-top" role="navigation">
+        <div class="navbar-header">
+            <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+                <i class="fa fa-reorder"></i>
+            </button>
+            <a asp-action="Index" asp-controller="Home" asp-area="Dashboard" class="navbar-brand">Digishop</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a aria-expanded="false" role="button" asp-controller="Product" asp-action="Index" asp-area=""> Вернуться на сайт</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-top-links navbar-right">
+                <li>
+                    <a asp-action="Logoff" asp-controller="Home" asp-area="Dashboard">
+                        <i class="fa fa-sign-out"></i> Выйти
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>

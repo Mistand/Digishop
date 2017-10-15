@@ -1,0 +1,39 @@
+﻿@using Digiseller.Engine.Core.Areas.Dashboard.Models.Settings
+@using Digiseller.Engine.Core.Providers
+@inject IConfProvider conf
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @(conf.Get<MainSettings>().ShopName)</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <environment names="Development">
+        <link rel="stylesheet" href="~/lib_bower/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib_bower/font-awesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="~/css/animate.css" />
+        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="~/lib_bower/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/lib_bower/font-awesome/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="~/css/animate.css" />
+        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    </environment>
+</head>
+<body class="gray-bg">
+    <div class="middle-box text-center animated fadeInDown">
+        <h1>404</h1>
+        <h3 class="font-bold">Page Not Found</h3>
+        <div class="error-desc">
+            Извините, но страница, которую Вы ищите, не была найдена.
+            <br />Попробуйте проверить URL-адрес, затем нажмите кнопку обновления страницы в Вашем браузере или вернитесь на главную страницу нашего сайта.
+            <br /><br /><a asp-controller="Product" asp-action="Index" asp-route-page="1" class="btn btn-primary">На главную</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+<div class="row border-bottom">
+    <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <a class="navbar-minimalize minimalize-styl-2 btn btn-primary"><i class="fa fa-bars"></i> </a>
+            <form role="search" class="navbar-form-custom" asp-controller="Product" asp-action="Search" method="get">
+                <div class="form-group">
+                    <input type="text" placeholder="Поиск по каталогу..." class="form-control" name="search" id="search">
+                </div>
+            </form>
+        </div>
+        @Html.Partial("_RightHorz")
+    </nav>
+</div>

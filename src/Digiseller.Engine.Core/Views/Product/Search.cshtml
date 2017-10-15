@@ -1,0 +1,84 @@
+﻿@using System.Linq
+@using System.Net
+@model Digiseller.Client.Core.Interfaces.ProductSearch.ISearchProduct
+@{
+    const string categoryName = "Поиск по товарам";
+    ViewData["Title"] = categoryName;
+    var goods = Model.Products.ToList();
+}
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>@categoryName</h2>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    
+@if (goods.Count == 0)
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="text-center m-t-lg">
+                <h1>Товары не найдены</h1>
+                <small>Но Вы можете посмотреть товары в других категориях</small>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    for (int i = 0; i < goods.Count; i += 4)
+     {
+         <div class="row">
+             @foreach (var t in goods.Skip(i).Take(4))
+             {
+                 <div class="col-md-3">
+                     <div class="ibox">
+                         <a asp-controller="Product" asp-action="Details" asp-route-id="@t.Id">
+                         <div class="ibox-content product-box" style="cursor: pointer;" onclick="location.href='@Url.Action("Details", "Product", new { id = t.Id })';">
+                             <img class="img-responsive" src="@Html.DigisellerImage(t.Id, 500, 300, false)" alt=""/>
+                             <div class="product-desc">
+                                 <span class="product-price">
+                                     @Html.Price(Context.Session.GetCurrency(), t.Price)
+                                 </span>
+                                 <a class="product-name" asp-controller="Product" asp-action="Details" asp-route-id="@t.Id">
+                                     @(!string.IsNullOrEmpty(t.Snippet.Name) 
+                                         ? Html.Raw(WebUtility.HtmlDecode(Html.MaxStringLengthWithSnippetReplace(t.Snippet.Name, int.MaxValue))) 
+                                         : Html.Raw(WebUtility.HtmlDecode(t.Name)))
+                                 </a>
+
+                                 @if (string.IsNullOrEmpty(t.Snippet.Name))
+                                 {
+                                     <div class="small m-t-xs">
+                                         @Html.Raw(
+                                             WebUtility.HtmlDecode(
+                                                 Html.MaxStringLengthWithSnippetReplace(t.Snippet.Information, 73)
+                                                 )
+                                             )
+                                     </div>
+                                 }
+                             </div>
+                         </div>
+                         </a>
+                     </div>
+                 </div>
+             }
+         </div>
+     }
+    <div class="row" style="margin-left: 8px;">
+        <div>
+            <cs-pager cs-paging-pagesize="@Model.Pagination.RowsCount"
+                      cs-paging-pagenumber="@Model.Pagination.PageNumber"
+                      cs-paging-totalitems="@(Model.Pagination.RowsCount * Model.Pagination.PageCount)"
+                      cs-pagenumber-param="page"
+                      asp-controller="Product"
+                      asp-action="Search" 
+                      asp-route-search="@Model.SearchString"
+                      cs-previous-page-title="Предыдущая страница"
+                      cs-next-page-title="Следующая страница"></cs-pager>
+        </div>
+    </div>
+}
+</div>

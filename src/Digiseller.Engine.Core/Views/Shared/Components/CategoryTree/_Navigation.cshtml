@@ -1,0 +1,71 @@
+﻿@model List<Digiseller.Client.Core.Interfaces.Categories.ICatalogCategory>
+
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear">
+                            <span class="block m-t-xs">
+                                <img src="~/Images/logo.png" alt=""/>
+                                <span class="text-muted text-xs block">Version 1.0 Alpha</span>
+                            </span>
+                        </span>
+                    </a>
+                </div>
+                <div class="logo-element">
+                    DS
+                </div>
+            </li>
+            <li>
+                <a href="/Products"><i class="fa fa-laptop"></i> <span class="nav-label">Главная</span> </a>
+            </li>
+            
+            @foreach (var i in Model)
+            {
+                <li>
+                    @if (i.ChildCategories.Any())
+                    {
+                        <a href="" ><i class="fa fa-sitemap"></i> <span class="nav-label" data-i18n="nav.menulevels">@i.Name </span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level collapse">
+                            <li>
+                                <a asp-controller="Product" asp-action="Index" asp-route-category="@i.Id">Все товары</a>
+                            </li>
+                            @foreach (var j in i.ChildCategories)
+                            {
+                                <li>
+                                    @if (j.ChildCategories.Any())
+                                    {
+                                        <a href="">@j.Name <span class="fa arrow"></span></a>
+                                        <ul class="nav nav-third-level collapse">
+                                            <li>
+                                                <a asp-controller="Product" asp-action="Index" asp-route-category="@j.Id">Все товары</a>
+                                            </li>
+                                            @foreach (var k in j.ChildCategories.ToList())
+                                            {
+                                                <li>
+                                                    <a asp-controller="Product" asp-action="Index" asp-route-category="@k.Id">@k.Name</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a asp-controller="Product" asp-action="Index" asp-route-category="@j.Id">@j.Name</a>
+                                        </li>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <a asp-controller="Product" asp-action="Index" asp-route-category="@i.Id"><i class="fa fa-folder"></i> <span class="nav-label">@i.Name</span> </a>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+</nav>
